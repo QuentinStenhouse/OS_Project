@@ -1,3 +1,8 @@
+/*  ECAM 2017
+    STENHOUSE Quentin
+    Myrm is a simple implementation of a rm command in C.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -5,11 +10,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-//int main (int argc, char *argv[]){
+int main (int argc, char *argv[]){
 
 int c, unlk;
-//char *rm_value;
-//*rm_value = argv[1];
 
 int is_regular_file(char *path){
     struct stat path_stat;
@@ -38,7 +41,7 @@ void rm(char *rm_value){
         printf("myrm: missing operand\n");
     }
 }
-//rm_value = argv[1];
-//rm(argv[1]);
 
-//}
+rm(argv[1]);
+
+}

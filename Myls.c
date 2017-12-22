@@ -1,3 +1,8 @@
+/*  ECAM 2017
+    STENHOUSE Quentin
+    Myls is a simple implementation of a ls command in C.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -73,6 +78,6 @@ void ls(char *path){
 
 int main (int argc, char *argv[]){
 
-//ls(argv[1]);
+ls(argv[1]);
 
 }

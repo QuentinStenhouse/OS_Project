@@ -2,10 +2,10 @@
     STENHOUSE Quentin
     MyShell is a simple implementation of a shell in C.
     It includes the following spec/limitations :
-        Interactive and batch modes available.
-        Commands must be on a single line.
-        Arguments must be separated by whitespace.
-        Only builtins are: Myls, Mycp, Myrm, MyFunc, help and exit. */
+    Interactive and batch modes available.
+    Commands must be on a single line.
+    Arguments must be separated by whitespace.
+    Only builtins are: Myls, Mycp, Myrm, MyFunc, help and exit. */
 
 #include <stdio.h>
 #include <stdlib.h>

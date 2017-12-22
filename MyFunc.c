@@ -1,3 +1,9 @@
+/*  ECAM 2017
+    STENHOUSE Quentin
+    MyFunc is a simple implementation of a function using Mycp, Myls and Myrm in C.
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -5,9 +11,6 @@
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include </home/debian/OS_Project/Mycp.c>
-//#include </home/debian/OS_Project/Myls.c>
-//#include </home/debian/OS_Project/Myrm.c>
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
@@ -17,26 +20,25 @@
 #include <sys/syscall.h>
 
 #define BLUE        "\x1b[34m"
-//#define YELLOW      "\x1b[33m"
 #define BOLD        "\x1b[1m"
 #define RESET       "\x1b[0m"
 
 
-struct linux_dirent {
+void ls(char *path){
+    struct linux_dirent {
     long           d_ino;
     off_t          d_off;
     unsigned short d_reclen;
     char           d_name[];
 };
 
-int fd, n;
-struct linux_dirent *namelist;
-char buf[1024];
-char *file_path;
-char d_type;
-char file_name[255];
+    int fd, n;
+    struct linux_dirent *namelist;
+    char buf[1024];
+    char *file_path;
+    char d_type;
+    char file_name[255];
 
-void ls(char *path){
     file_path = path;
     if(file_path == NULL){
         file_path = ".";
@@ -62,7 +64,7 @@ void ls(char *path){
                 strncpy(file_name, namelist->d_name, 254);
                 // ignore entries starting by "."
                 if(file_name[0] !=  '.'){
-                    // print directory entries in blue
+                // print directory entries in blue
                     if(d_type == 4){
                         printf(BLUE BOLD "%s " RESET, namelist->d_name);
                     }
@@ -70,19 +72,15 @@ void ls(char *path){
                     else {
                         printf("%s ", namelist->d_name);
                     }
-                }
+                    }
                 i += namelist->d_reclen;
-            }
+                }
         }while(n > 0);
         printf("\n");
     }
 }
 
-//int main (int argc, char *argv[]){
-
 int unlk;
-//char *rm_value;
-//rm_value = argv[1];
 
 int is_regular_file(char *path){
     struct stat path_stat;
@@ -100,26 +98,22 @@ void rm(char *rm_value){
                 // keep going
             }
             else {
-                printf("myrm: cannot remove '%s': No such file", rm_value);
+                printf("Myrm: cannot remove '%s': No such file", rm_value);
             }
         }
         else {
-            printf("myrm: cannot remove '%s': No such file or Is not a regular file\n", rm_value);
+            printf("Myrm: cannot remove '%s': No such file or Is not a regular file\n", rm_value);
         }
     }
     else {
-        printf("myrm: missing operand\n");
+        printf("Myrm: missing operand\n");
     }
 }
-//rm_value = argv[1];
-//rm(argv[1]);
-
-//}
 
 /*
-This procedure is the basic procedure of the mycp command. 
-It will open a file in reading and the other in writing and will write what's 
-in the reading file in the writing file. 
+This procedure is the basic procedure of the mycp command.
+It will open a file in reading and the other in writing and will write what's
+in the reading file in the writing file.
 */
 void copy (char * fil, char * wit)
 {
@@ -149,7 +143,7 @@ int c;
 int flag_multiple = 0;
 int flag_path = 0;
 char * MyPath = "/home/debian/OS_Project/MyValidDatas/";
-
+char * MyPath2 = "/home/debian/OS_Project/datas/";
 
 struct option longopts[] = {
 	{"path", no_argument, NULL, 'p'},
@@ -179,24 +173,79 @@ while((c = getopt_long(argc, argv,"pm", longopts, NULL)) != -1) // Put the getop
 
 if (flag_path == 1){
 	char * MyPath1 = argv[3];
-	char * MyFileName1 = argv[4];
-        char * str1 = (char *) malloc(1 + strlen(MyPath1)+ strlen(MyFileName1));
-        strcpy(str1, MyPath1);
-        strcat(str1, MyFileName1);
-	copy(argv[2], str1);
-	rm(argv[2]);
+	char * MyFileName1 = argv[2];
+    char * str1 = (char *) malloc(1 + strlen(MyPath1)+ strlen(MyFileName1));
+    strcpy(str1, MyPath1);
+    strcat(str1, MyFileName1);
+    char * str2 = (char *) malloc(1 + strlen(MyPath2)+ strlen(MyFileName1));
+    strcpy(str2, MyPath2);
+    strcat(str2, MyFileName1);
+	copy(str2, str1);
+	rm(str2);
 	ls(argv[3]);
 }
 else if (flag_multiple == 1){
-	printf("In the multiple");
+	struct linux_dirent {
+    long           d_ino;
+    off_t          d_off;
+    unsigned short d_reclen;
+    char           d_name[];
+};
+
+    int fd, n;
+    struct linux_dirent *namelist;
+    char buf[1024];
+    char *file_path;
+    char d_type;
+    char file_name[255];
+
+    file_path = argv[2];
+    if(file_path == NULL){
+        file_path = ".";
+    }
+    // open file_path file or directory and get the file descriptor
+    fd = open(file_path, O_RDONLY);
+    if(fd == -1){
+        printf("Cannot access'%s': No such file or directory\n", file_path);
+    }
+    else {
+        do{
+            /* reads several linux_dirent structures from the directory referred to
+                by the open file descriptor fd into the buffer pointed to by buf. */
+            n = syscall(SYS_getdents, fd, buf, 1024);
+            for(int i = 0; i < n;) {
+                namelist = (struct linux_dirent *) (buf + i);
+                strncpy(file_name, namelist->d_name, 254);
+                // ignore entries starting by "."
+                if(file_name[0] !=  '.'){
+                    char * MyPathf = argv[3];
+                    char * strf = (char *) malloc(1 + strlen(MyPathf)+ strlen(namelist->d_name));
+                    strcpy(strf, MyPathf);
+                    strcat(strf, namelist->d_name);
+                    char * strb = (char *) malloc(1 + strlen(file_path)+ strlen(file_name));
+                    strcpy(strb, file_path);
+                    strcat(strb, file_name);
+                    copy(strb, strf);
+                    rm(strb);
+                    }
+                i += namelist->d_reclen;
+            }
+        }while(n > 0);
+        printf("\n");
+    }
 }
 else if (flag_path == 0 && flag_multiple == 0){
-	char * MyFileName2 = argv[2];
-	char * str2 = (char *) malloc(1 + strlen(MyPath)+ strlen(MyFileName2));
-	strcpy(str2, MyPath);
-	strcat(str2, MyFileName2);
-	copy(argv[1], str2);
-	rm(argv[1]);
+    //Combine the name of the file and the path where we want to put it
+	char * MyFileName2 = argv[1];
+	char * str3 = (char *) malloc(1 + strlen(MyPath)+ strlen(MyFileName2));
+	strcpy(str3, MyPath);
+	strcat(str3, MyFileName2);
+    //Use the folder where the data are stored and takes the data that we want to move
+	char * str4 = (char *) malloc(1 + strlen(MyPath2)+ strlen(MyFileName2));
+	strcpy(str4, MyPath2);
+	strcat(str4, MyFileName2);
+	copy(str4, str3);
+	rm(str4);
 	ls(MyPath);
 }
 }
